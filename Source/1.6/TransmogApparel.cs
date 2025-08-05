@@ -92,6 +92,7 @@ public class TransmogApparel : IExposable
             : _favoriteColor ? Pawn.story.favoriteColor.color 
             : _color;
         _apparelCached.SetColor(color, false);
+        _apparelCached.holdingOwner = Pawn.apparel.GetDirectlyHeldThings();
         
         return _apparelCached;
     }

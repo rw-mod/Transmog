@@ -102,6 +102,7 @@ namespace Transmog
                             : color,
                     false
                 );
+                apparelCached.holdingOwner = Pawn.apparel.GetDirectlyHeldThings();
             }
             return apparelCached;
         }

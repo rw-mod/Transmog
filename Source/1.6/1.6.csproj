@@ -44,6 +44,7 @@
         <Compile Include="Dialog_AddTransmog.cs" />
         <Compile Include="Dialog_EditTransmog.cs" />
         <Compile Include="Dialog_SavePreset.cs" />
+        <Compile Include="HarmonyPatches.cs" />
         <Compile Include="ITab_Pawn_Transmog.cs" />
         <Compile Include="PresetManager.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>

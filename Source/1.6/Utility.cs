@@ -14,13 +14,13 @@ public static class Utility
     {
         return (pawn.Preset()?.Enabled ?? false) && !(Transmog.settings.DisabledOnDraft && pawn.Drafted) ? pawn.Preset().Apparel : pawn.apparel.WornApparel;
     }
-    
+
     private static readonly Dictionary<ThingDef, List<ThingStyleDef>> Styles = new Dictionary<ThingDef, List<ThingStyleDef>>();
 
     public static List<ThingStyleDef> GetStyles(this ThingDef def)
     {
         if (Styles.TryGetValue(def, out List<ThingStyleDef> styles)) return styles;
-        
+
         Styles[def] = new List<ThingStyleDef> { null };
         if (!def.randomStyle.NullOrEmpty())
         {
@@ -49,12 +49,10 @@ public static class Utility
             hexCode.Length == 8 ? Convert.ToInt32(hexCode.Substring(6, 2), 16) / 255f : 1
         );
     }
-        
 
-    public static string toString(this Color color, bool alphaChannelEnabled = false)
+
+    public static string ToString(this Color color, bool alphaChannelEnabled = false)
     {
         return $"{(int)(color.r * 255):X2}{(int)(color.g * 255):X2}{(int)(color.b * 255):X2}{(alphaChannelEnabled ? $"{(int)(color.a * 255):X2}" : "")}";
     }
-        
 }
-

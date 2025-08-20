@@ -55,7 +55,7 @@ public class Dialog_AddTransmog : Window
             {
                 GUI.DrawTexture(rowRect, TexUI.HighlightTex);
             }
-                
+
             Widgets.Label(new Rect(rowRect.x, rowRect.y + 5f, rowRect.width, height - 10f), apparel.LabelCap);
             List<ThingStyleDef> styles = apparel.GetStyles();
             bool displayAllStyles = Transmog.settings.DisplayAllStyles ^ _invertedApparel.Contains(apparel);
@@ -68,7 +68,7 @@ public class Dialog_AddTransmog : Window
             {
                 _ = _invertedApparel.Contains(apparel) ? _invertedApparel.Remove(apparel) : _invertedApparel.Add(apparel);
             }
-            
+
             if (Widgets.ButtonInvisible(rowRect))
             {
                 Select(apparel);

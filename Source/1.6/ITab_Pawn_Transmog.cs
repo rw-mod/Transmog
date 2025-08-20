@@ -4,6 +4,7 @@ using UnityEngine;
 using Verse;
 
 namespace Transmog;
+
 public class ITab_Pawn_Transmog : ITab
 {
     private Vector2 _scrollPosition = Vector2.zero;
@@ -102,7 +103,7 @@ public class ITab_Pawn_Transmog : ITab
             {
                 indexToMoveUp = i;
             }
-            
+
             if (i != Preset.Transmog.Count - 1 && Widgets.ButtonImage(new Rect(inRect.x, rowRect.y + height / 2, height / 2, height / 2), TexButton.ReorderDown))
             {
                 indexToMoveUp = i + 1;

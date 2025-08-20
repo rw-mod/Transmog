@@ -8,7 +8,7 @@ public class Dialog_SavePreset : Window
     private readonly CompTransmog _preset;
 
     public override Vector2 InitialSize => new Vector2(280, 175);
-    
+
     private string _name;
 
     public Dialog_SavePreset(CompTransmog preset)

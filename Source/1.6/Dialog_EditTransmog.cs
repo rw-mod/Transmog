@@ -4,6 +4,7 @@ using UnityEngine;
 using Verse;
 
 namespace Transmog;
+
 public class Dialog_EditTransmog : Window
 {
     private readonly TransmogApparel _transmog;
@@ -19,7 +20,7 @@ public class Dialog_EditTransmog : Window
         draggable = true;
         doCloseX = true;
         _transmog = transmog;
-        _hexCode = transmog.Color.toString(AlphaChannelEnabled);
+        _hexCode = transmog.Color.ToString(AlphaChannelEnabled);
     }
 
     public override void OnAcceptKeyPressed()
@@ -27,7 +28,7 @@ public class Dialog_EditTransmog : Window
         base.OnAcceptKeyPressed();
         if (_hexCode.Length == 6)
         {
-            _transmog.Color = _hexCode.ToColor(); 
+            _transmog.Color = _hexCode.ToColor();
         }
     }
 
@@ -59,7 +60,7 @@ public class Dialog_EditTransmog : Window
                 )
             );
         }
-        
+
         if (ModsConfig.IdeologyActive && Widgets.RadioButtonLabeled(favoriteColorRect, "Transmog.SetFavoriteColor".Translate(), _transmog.FavoriteColor))
         {
             _transmog.FavoriteColor ^= true;
@@ -99,7 +100,7 @@ public class Dialog_EditTransmog : Window
         }
         if (color != _transmog.Color)
         {
-            _hexCode = color.toString(AlphaChannelEnabled);
+            _hexCode = color.ToString(AlphaChannelEnabled);
         }
     }
 }

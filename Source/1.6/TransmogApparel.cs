@@ -26,8 +26,7 @@ public class TransmogApparel : IExposable
         get => _apparelDef;
         set
         {
-            if (_apparelDef == value)
-                return;
+            if (_apparelDef == value) return;
             _apparelDef = value;
             Update();
         }
@@ -37,8 +36,7 @@ public class TransmogApparel : IExposable
         get => _styleDef;
         set
         {
-            if (_styleDef == value)
-                return;
+            if (_styleDef == value) return;
             _styleDef = value;
             Update();
         }
@@ -48,11 +46,12 @@ public class TransmogApparel : IExposable
         get => _favoriteColor;
         set
         {
-            if (_favoriteColor == value)
-                return;
+            if (_favoriteColor == value) return;
             _favoriteColor = value;
             if (value)
+            {
                 _ideoColor = false;
+            }
             Update();
         }
     }
@@ -61,11 +60,13 @@ public class TransmogApparel : IExposable
         get => _ideoColor;
         set
         {
-            if (_ideoColor == value)
-                return;
+            if (_ideoColor == value) return;
+
             _ideoColor = value;
             if (value)
+            {
                 _favoriteColor = false;
+            }
             Update();
         }
     }
@@ -74,8 +75,8 @@ public class TransmogApparel : IExposable
         get => _color;
         set
         {
-            if (_color == value)
-                return;
+            if (_color == value) return;
+
             _color = value;
             Update();
         }
@@ -84,16 +85,16 @@ public class TransmogApparel : IExposable
     public Apparel GetApparel()
     {
         if (_apparelCached != null) return _apparelCached;
-        
+
         _apparelCached = (Apparel)ThingMaker.MakeThing(_apparelDef, GenStuff.DefaultStuffFor(_apparelDef));
         _apparelCached.SetStyleDef(_styleDef);
 
-        Color color = _ideoColor ? Pawn.Ideo.Color 
-            : _favoriteColor ? Pawn.story.favoriteColor.color 
+        Color color = _ideoColor ? Pawn.Ideo.Color
+            : _favoriteColor ? Pawn.story.favoriteColor.color
             : _color;
         _apparelCached.SetColor(color, false);
         _apparelCached.holdingOwner = Pawn.apparel.GetDirectlyHeldThings();
-        
+
         return _apparelCached;
     }
     private Apparel _apparelCached;
@@ -110,7 +111,7 @@ public class TransmogApparel : IExposable
             Color = Color
         };
     }
-    
+
     private void Update()
     {
         _apparelCached = null;

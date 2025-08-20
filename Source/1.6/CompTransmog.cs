@@ -22,7 +22,7 @@ public class CompTransmog : ThingComp
         }
     }
     private bool _enabled;
-    
+
     public bool DraftedTransmogEnabled
     {
         get => _draftedTransmogEnabled;
@@ -40,12 +40,16 @@ public class CompTransmog : ThingComp
         private set
         {
             if (DraftedTransmogEnabled && Pawn.Drafted)
+            {
                 _draftedTransmog = value;
+            }
             else
+            {
                 _transmog = value;
+            }
         }
     }
-    
+
     public Stack<List<TransmogApparel>> History => DraftedTransmogEnabled && Pawn.Drafted ? _draftedHistory : _history;
 
     private List<TransmogApparel> _transmog = new List<TransmogApparel>();
@@ -53,22 +57,21 @@ public class CompTransmog : ThingComp
 
     private List<TransmogApparel> _draftedTransmog = new List<TransmogApparel>();
     private readonly Stack<List<TransmogApparel>> _draftedHistory = new Stack<List<TransmogApparel>>();
-    Pawn Pawn => parent as Pawn;
+    private Pawn Pawn => parent as Pawn;
     public List<Apparel> Apparel => Transmog.Select(transmog => transmog.GetApparel()).ToList();
 
     private void Save() => History.Push(Transmog.Select(transmog => transmog.DuplicateForPawn(Pawn)).ToList());
 
     public void CopyFromApparel()
     {
-        IEnumerable<TransmogApparel> newTransmog = Pawn.apparel.WornApparel.Select(
-            apparel =>
-                new TransmogApparel()
-                {
-                    Pawn = Pawn,
-                    ApparelDef = apparel.def,
-                    StyleDef = apparel.StyleDef,
-                    Color = apparel.DrawColor
-                }
+        IEnumerable<TransmogApparel> newTransmog = Pawn.apparel.WornApparel.Select(apparel =>
+            new TransmogApparel
+            {
+                Pawn = Pawn,
+                ApparelDef = apparel.def,
+                StyleDef = apparel.StyleDef,
+                Color = apparel.DrawColor
+            }
         );
         if (!Transmog.SequenceEqual(newTransmog))
         {
@@ -93,8 +96,7 @@ public class CompTransmog : ThingComp
 
     public void TryRevert()
     {
-        if (History.Count == 0)
-            return;
+        if (History.Count == 0) return;
         Transmog = History.Pop();
         Update();
     }

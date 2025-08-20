@@ -12,82 +12,68 @@ namespace Transmog;
 [StaticConstructorOnStartup]
 public static class HarmonyPatches
 {
-    private static readonly Type PatchType = typeof(HarmonyPatches);
-    private static readonly HarmonyMethod TranspilerRender = new HarmonyMethod(PatchType.GetMethod(nameof(Transpiler_Render), BindingFlags.Public | BindingFlags.Static));
-    private static readonly HarmonyMethod PrefixGetDynamicNodes = new HarmonyMethod(PatchType.GetMethod(nameof(Prefix_GetDynamicNodes), BindingFlags.Public | BindingFlags.Static));
-    private static readonly HarmonyMethod PrefixShield = new HarmonyMethod(PatchType.GetMethod(nameof(Prefix_Shield), BindingFlags.Public | BindingFlags.Static));
-    private static readonly HarmonyMethod PostfixDrafted = new HarmonyMethod(PatchType.GetMethod(nameof(Postfix_Drafted), BindingFlags.Public | BindingFlags.Static));
-
     static HarmonyPatches()
     {
         Harmony harmony = new Harmony("rw.mod.transmog");
 
-        harmony.Patch(AccessTools.Method(typeof(PawnRenderUtility), "DrawEquipmentAndApparelExtras"), transpiler: TranspilerRender);
-        harmony.Patch(AccessTools.Method(typeof(PawnRenderTree), "AdjustParms"), transpiler: TranspilerRender);
-        harmony.Patch(AccessTools.Method(typeof(DynamicPawnRenderNodeSetup_Apparel), "GetDynamicNodes"), prefix: PrefixGetDynamicNodes);
-        harmony.Patch(AccessTools.PropertyGetter(typeof(CompShield), "ShouldDisplay"), prefix: PrefixShield);
-        harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), "Drafted"), postfix: PostfixDrafted);
-    }
+        Type patchType = typeof(HarmonyPatches);
 
-    private static readonly Func<Apparel, bool> ShouldAddApparelNode =
-        (Func<Apparel, bool>)Delegate.CreateDelegate(
-            typeof(Func<Apparel, bool>),
-            typeof(DynamicPawnRenderNodeSetup_Apparel).GetMethod("ShouldAddApparelNode", BindingFlags.NonPublic | BindingFlags.Static)!
-        );
-    private static readonly MethodInfo ProcessApparelMethod = AccessTools.Method(typeof(DynamicPawnRenderNodeSetup_Apparel), "ProcessApparel");
-    private static readonly object InstanceDynamicPawnRenderNodeSetupApparel = Activator.CreateInstance(typeof(DynamicPawnRenderNodeSetup_Apparel));
+        HarmonyMethod transpilerReplaceWornApparel = new HarmonyMethod(patchType, nameof(Transpiler_ReplaceWornApparel));
 
-    public static bool Prefix_GetDynamicNodes(Pawn pawn, PawnRenderTree tree, ref IEnumerable<(PawnRenderNode, PawnRenderNode)> __result)
-    {
-        List<(PawnRenderNode, PawnRenderNode)> result = new List<(PawnRenderNode, PawnRenderNode)>();
+        harmony.Patch(AccessTools.Method(typeof(PawnRenderUtility), "DrawEquipmentAndApparelExtras"), transpiler: transpilerReplaceWornApparel);
+        harmony.Patch(AccessTools.Method(typeof(PawnRenderTree), "AdjustParms"), transpiler: transpilerReplaceWornApparel);
 
-        Dictionary<PawnRenderNode, int> layerOffsets = new Dictionary<PawnRenderNode, int>();
-        PawnRenderNode node;
-        PawnRenderNode headApparelNode = tree.TryGetNodeByTag(PawnRenderNodeTagDefOf.ApparelHead, out node) ? node : null;
-        PawnRenderNode node2;
-        PawnRenderNode bodyApparelNode = tree.TryGetNodeByTag(PawnRenderNodeTagDefOf.ApparelBody, out node2) ? node2 : null;
-        foreach (Apparel item in Utility.TransmogApparel(pawn))
+        Type innerType = typeof(DynamicPawnRenderNodeSetup_Apparel)
+            .GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
+            .FirstOrDefault(type => type.Name.Contains("GetDynamicNodes"));
+        if (innerType != null)
         {
-            if (!ShouldAddApparelNode(item)) continue;
-            IEnumerable<(PawnRenderNode node, PawnRenderNode parent)> processApparel = (IEnumerable<(PawnRenderNode node, PawnRenderNode parent)>)ProcessApparelMethod.Invoke(InstanceDynamicPawnRenderNodeSetupApparel, new object[]
+            MethodInfo moveNextMethod = AccessTools.Method(innerType, "MoveNext");
+            if (moveNextMethod != null)
             {
-                pawn, tree, item, headApparelNode, bodyApparelNode, layerOffsets
-            });
-
-            foreach ((PawnRenderNode node, PawnRenderNode parent) valueTuple in processApparel)
-            {
-                if (valueTuple.node != null)
-                {
-                    result.Add(valueTuple);
-                }
-                if (valueTuple.parent != null && !layerOffsets.TryAdd(valueTuple.parent, 1))
-                {
-                    layerOffsets[valueTuple.parent]++;
-                }
+                harmony.Patch(moveNextMethod, transpiler: transpilerReplaceWornApparel);
             }
         }
 
-        __result = result;
-        return false;
+        harmony.Patch(AccessTools.PropertyGetter(typeof(CompShield), "ShouldDisplay"), prefix: new HarmonyMethod(patchType, nameof(Prefix_Shield)));
+        harmony.Patch(AccessTools.PropertySetter(typeof(Pawn_DraftController), "Drafted"), postfix: new HarmonyMethod(patchType, nameof(Postfix_Drafted)));
     }
 
-    public static IEnumerable<CodeInstruction> Transpiler_Render(IEnumerable<CodeInstruction> instructions)
+    private static readonly MethodInfo WornApparelGetter = AccessTools.PropertyGetter(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.WornApparel));
+    private static readonly MethodInfo TransmogApparelMethod = AccessTools.Method(typeof(Utility), nameof(Utility.TransmogApparel));
+    private static readonly FieldInfo PawnApparelField = AccessTools.Field(typeof(Pawn), nameof(Pawn.apparel));
+
+    public static IEnumerable<CodeInstruction> Transpiler_ReplaceWornApparel(IEnumerable<CodeInstruction> instructions, MethodBase original)
     {
         List<CodeInstruction> codes = instructions.ToList();
 
-        for (int i = 0; i < codes.Count; i++)
+        bool patched = false;
+
+        for (int i = 0; i < codes.Count - 1; i++)
         {
-            yield return codes.ElementAt(i);
+            if (!codes[i].LoadsField(PawnApparelField) || !codes[i + 1].Calls(WornApparelGetter)) continue;
 
-            if (i + 2 >= codes.Count) continue;
-            CodeInstruction tempCode = codes.ElementAt(i + 2);
-            if (tempCode.opcode != OpCodes.Callvirt) continue;
-            if ((MethodInfo)tempCode.operand != AccessTools.PropertyGetter(typeof(Pawn_ApparelTracker), "WornApparel")) continue;
+            codes[i].opcode = OpCodes.Nop;
+            codes[i].operand = null;
 
-            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Utility), "TransmogApparel"));
+            codes[i + 1].opcode = OpCodes.Call;
+            codes[i + 1].operand = TransmogApparelMethod;
 
-            i += 2;
+            patched = true;
+
+            break;
         }
+
+        if (patched)
+        {
+            Log.Message($"Transmog: Successfully patched {original.DeclaringType?.Name}.{original.Name}.");
+        }
+        else
+        {
+            Log.Warning($"Transmog: Failed to find pattern in {original.DeclaringType?.Name}.{original.Name}. The mod may not work as expected.");
+        }
+
+        return codes.AsEnumerable();
     }
 
     public static bool Prefix_Shield(ref CompShield __instance, ref bool __result)

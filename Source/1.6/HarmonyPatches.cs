@@ -26,13 +26,10 @@ public static class HarmonyPatches
         Type innerType = typeof(DynamicPawnRenderNodeSetup_Apparel)
             .GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance)
             .FirstOrDefault(type => type.Name.Contains("GetDynamicNodes"));
-        if (innerType != null)
+
+        if (innerType is not null && AccessTools.Method(innerType, "MoveNext") is { } moveNextMethod)
         {
-            MethodInfo moveNextMethod = AccessTools.Method(innerType, "MoveNext");
-            if (moveNextMethod != null)
-            {
-                harmony.Patch(moveNextMethod, transpiler: transpilerReplaceWornApparel);
-            }
+            harmony.Patch(moveNextMethod, transpiler: transpilerReplaceWornApparel);
         }
 
         harmony.Patch(AccessTools.PropertyGetter(typeof(CompShield), "ShouldDisplay"), prefix: new HarmonyMethod(patchType, nameof(Prefix_Shield)));

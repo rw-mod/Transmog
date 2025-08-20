@@ -92,7 +92,13 @@ public static class HarmonyPatches
 
     public static bool Prefix_Shield(ref CompShield __instance, ref bool __result)
     {
-        return __instance.parent is not Apparel { Wearer: null } || (__result = false);
+        if (__instance.parent is Apparel { Wearer: not null })
+        {
+            __result = false;
+            return false;
+        }
+
+        return true;
     }
 
     public static void Postfix_Drafted(ref Pawn_DraftController __instance)

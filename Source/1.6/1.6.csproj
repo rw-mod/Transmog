@@ -43,10 +43,12 @@
         <Compile Include="CompTransmog.cs" />
         <Compile Include="Dialog_AddTransmog.cs" />
         <Compile Include="Dialog_EditTransmog.cs" />
-        <Compile Include="Dialog_SavePreset.cs" />
+        <Compile Include="Dialog_PresetFileList.cs" />
+        <Compile Include="Dialog_PresetFileList_Load.cs" />
+        <Compile Include="Dialog_PresetFileList_Save.cs" />
         <Compile Include="HarmonyPatches.cs" />
         <Compile Include="ITab_Transmog.cs" />
-        <Compile Include="PresetManager.cs" />
+        <Compile Include="PresetDataSaveLoader.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
         <Compile Include="Settings.cs" />
         <Compile Include="Startup.cs" />

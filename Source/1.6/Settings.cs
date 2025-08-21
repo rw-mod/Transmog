@@ -8,6 +8,7 @@ public class Settings : ModSettings
     public bool DisplayAllStyles;
     public bool DisabledOnDraft;
     public bool AlphaChannelEnabled;
+    public bool Migration;
 
     public void DoWindowContents(Rect inRect)
     {
@@ -44,6 +45,13 @@ public class Settings : ModSettings
                 AlphaChannelEnabled = !AlphaChannelEnabled;
             }
         }
+        {
+            Rect rowRect = ls.GetRect(height);
+            if (Widgets.ButtonText(rowRect, "Transmog.Migration".Translate()))
+            {
+                PresetDataSaveLoader.Migration();
+            }
+        }
         ls.End();
     }
 
@@ -52,6 +60,7 @@ public class Settings : ModSettings
         Scribe_Values.Look(ref DisplayAllStyles, "displayAllStyles");
         Scribe_Values.Look(ref DisabledOnDraft, "disabledOnDraft");
         Scribe_Values.Look(ref AlphaChannelEnabled, "alphaChannelEnabled");
+        Scribe_Values.Look(ref Migration, "migration");
     }
 }
 

@@ -13,5 +13,7 @@
     <Transmog.PresetName>preset name</Transmog.PresetName>
     <Transmog.CopyFromApparel>copy from apparel</Transmog.CopyFromApparel>
     <Transmog.Preset>preset</Transmog.Preset>
-    <Transmog.Save>save to preset</Transmog.Save>
+    <Transmog.Save>Save to preset</Transmog.Save>
+    <Transmog.Load>Preset load</Transmog.Load>
+    <Transmog.Migration>Preset migration</Transmog.Migration>
 </LanguageData>

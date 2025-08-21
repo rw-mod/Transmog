@@ -15,6 +15,6 @@ public static class Startup
             def.inspectorTabsResolved.Add(InspectTabManager.GetSharedInstance(typeof(ITab_Transmog)));
         }
 
-        PresetManager.LoadPresets();
+        PresetDataSaveLoader.StartupMigration();
     }
 }

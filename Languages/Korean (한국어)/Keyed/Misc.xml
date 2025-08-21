@@ -14,4 +14,6 @@
     <Transmog.CopyFromApparel>현재 장비 가져오기</Transmog.CopyFromApparel>
     <Transmog.Preset>프리셋</Transmog.Preset>
     <Transmog.Save>프리셋 저장</Transmog.Save>
+    <Transmog.Load>프리셋 불러오기</Transmog.Load>
+    <Transmog.Migration>프리셋 마이그레이션</Transmog.Migration>
 </LanguageData>

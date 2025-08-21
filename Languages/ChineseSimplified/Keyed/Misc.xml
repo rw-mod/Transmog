@@ -14,4 +14,6 @@
     <Transmog.CopyFromApparel>复制于服装</Transmog.CopyFromApparel>
     <Transmog.Preset>预设</Transmog.Preset>
     <Transmog.Save>保存至预设</Transmog.Save>
+    <Transmog.Load>加载预设</Transmog.Load>
+    <Transmog.Migration>预设迁移</Transmog.Migration>
 </LanguageData>

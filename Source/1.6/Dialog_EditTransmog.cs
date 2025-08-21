@@ -37,6 +37,8 @@ public class Dialog_EditTransmog : Window
     {
         Text.Font = GameFont.Small;
         const int gap = 4;
+        const int height = 32;
+        const int fullWidth = 320;
 
         const int iconSize = 128;
         Rect iconRect = new Rect(inRect.x, inRect.y, iconSize, iconSize);
@@ -65,7 +67,7 @@ public class Dialog_EditTransmog : Window
             _transmog.FavoriteColor = _transmog.IdeoColor = false;
         }
 
-        Rect styleButtonRect = new Rect(inRect.x, iconRect.y + iconRect.height + gap, 320, 32);
+        Rect styleButtonRect = new Rect(inRect.x, iconRect.y + iconRect.height + gap, fullWidth, height);
         if (_transmog.ApparelDef.GetStyles().Any() && Widgets.ButtonText(styleButtonRect, $"{"Style".Translate()} {_transmog.StyleDef?.Category?.LabelCap ?? _transmog.StyleDef?.defName ?? "None".Translate()}".StripTags().Truncate(styleButtonRect.width)))
         {
             StyleMenu.Clear();
@@ -83,7 +85,7 @@ public class Dialog_EditTransmog : Window
         Widgets.Label(hexCodeLabelRect, "#");
         GUI.SetNextControlName("Hexcode");
 
-        Rect hexCodeTextRect = new Rect(hexCodeLabelRect.width, styleButtonRect.y + styleButtonRect.height + gap, MaxLength * 11, 32);
+        Rect hexCodeTextRect = new Rect(hexCodeLabelRect.width, styleButtonRect.y + styleButtonRect.height + gap, MaxLength * 11, height);
         _hexCode = Widgets.TextField(hexCodeTextRect, _hexCode, MaxLength, new Regex("^[0-9a-fA-F]*$"));
         if (!_focused)
         {
@@ -95,7 +97,7 @@ public class Dialog_EditTransmog : Window
             _transmog.Color = _hexCode.ToColor();
         }
 
-        Rect confirmButtonRect = new Rect(inRect.width / 2, styleButtonRect.y + styleButtonRect.height + gap, 160, 32);
+        Rect confirmButtonRect = new Rect(inRect.width / 2, styleButtonRect.y + styleButtonRect.height + gap, 160, height);
         if (Widgets.ButtonText(confirmButtonRect, "Confirm".Translate()))
         {
             Find.WindowStack.TryRemove(this);
@@ -104,21 +106,19 @@ public class Dialog_EditTransmog : Window
         Color color = _transmog.Color;
         const int colorSliderGap = 8;
 
-        Rect rRect = new Rect(inRect.x, confirmButtonRect.y + confirmButtonRect.height + colorSliderGap, 320, 32);
+        Rect rRect = new Rect(inRect.x, confirmButtonRect.y + confirmButtonRect.height + colorSliderGap, fullWidth, height);
         color.r = Widgets.HorizontalSlider(rRect, color.r, 0, 1);
 
-        Rect gRect = new Rect(inRect.x, rRect.y + rRect.height + colorSliderGap, 320, 32);
+        Rect gRect = new Rect(inRect.x, rRect.y + rRect.height + colorSliderGap, fullWidth, height);
         color.g = Widgets.HorizontalSlider(gRect, color.g, 0, 1);
 
-        Rect bRect = new Rect(inRect.x, gRect.y + gRect.height + colorSliderGap, 320, 32);
+        Rect bRect = new Rect(inRect.x, gRect.y + gRect.height + colorSliderGap, fullWidth, height);
         color.b = Widgets.HorizontalSlider(bRect, color.b, 0, 1);
-        // Log.Message($"{bRect.y + bRect.height + colorSliderGap}");
 
         if (AlphaChannelEnabled)
         {
-            Rect aRect = new Rect(inRect.x, bRect.y + bRect.height + colorSliderGap, 320, 32);
+            Rect aRect = new Rect(inRect.x, bRect.y + bRect.height + colorSliderGap, fullWidth, height);
             color.a = Widgets.HorizontalSlider(aRect, color.a, 0, 1);
-            // Log.Message($"{aRect.y + aRect.height + colorSliderGap}");
         }
 
         if (color != _transmog.Color)

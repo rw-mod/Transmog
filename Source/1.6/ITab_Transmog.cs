@@ -76,11 +76,6 @@ public class ITab_Transmog : ITab
                 Find.WindowStack.Add(new Dialog_PresetFileList_Load(Preset));
             }));
 
-            if (PresetDataSaveLoader.ExistsOldFile && !Transmog.settings.Migration)
-            {
-                PresetMenu.Add(new FloatMenuOption("Transmog.Migration".Translate(), PresetDataSaveLoader.Migration));
-            }
-            
             Find.WindowStack.Add(new FloatMenu(PresetMenu));
         }
 

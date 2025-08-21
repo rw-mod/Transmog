@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Verse;
@@ -10,7 +10,7 @@ public class Dialog_EditTransmog : Window
     private readonly TransmogApparel _transmog;
     private static bool AlphaChannelEnabled => Transmog.settings.AlphaChannelEnabled;
     private static int MaxLength => AlphaChannelEnabled ? 8 : 6;
-    public override Vector2 InitialSize => new Vector2(360, AlphaChannelEnabled ? 384 : 336);
+    public override Vector2 InitialSize => new Vector2(360, AlphaChannelEnabled ? 376 : 336);
     private string _hexCode;
     private bool _focused;
 
@@ -32,49 +32,58 @@ public class Dialog_EditTransmog : Window
         }
     }
 
+    private static readonly List<FloatMenuOption> StyleMenu = new List<FloatMenuOption>();
     public override void DoWindowContents(Rect inRect)
     {
         Text.Font = GameFont.Small;
-        Rect iconRect = new Rect(inRect.x, inRect.y, 128, 128);
-        Rect styleRect = new Rect(inRect.x + 112, inRect.y + 112, 16, 16);
-        Rect favoriteColorRect = new Rect(inRect.x + 160, inRect.y, 160, 32);
-        Rect ideoColorRect = new Rect(inRect.x + 160, inRect.y + 48, 160, 32);
-        Rect customColorRect = new Rect(inRect.x + 160, inRect.y + 96, 160, 32);
-        Rect hexCodeLabelRect = new Rect(inRect.x, inRect.y + 144 + 5, 12, 22);
-        Rect hexCodeTextRect = new Rect(inRect.x + 12, inRect.y + 144, MaxLength * 11, 32);
-        Rect confirmButtonRect = new Rect(inRect.x + 160, inRect.y + 144, 160, 32);
-        Rect rRect = new Rect(inRect.x, inRect.y + 192, 320, 32);
-        Rect gRect = new Rect(inRect.x, inRect.y + 240, 320, 32);
-        Rect bRect = new Rect(inRect.x, inRect.y + 288, 320, 32);
-        Rect aRect = new Rect(inRect.x, inRect.y + 336, 320, 32);
+        const int gap = 4;
 
+        const int iconSize = 128;
+        Rect iconRect = new Rect(inRect.x, inRect.y, iconSize, iconSize);
         Widgets.ThingIcon(iconRect, _transmog.GetApparel());
-        if (_transmog.ApparelDef.GetStyles().Count > 1 && Widgets.ButtonImage(styleRect, TexButton.SelectOverlappingNext))
-        {
-            Find.WindowStack.Add(
-                new FloatMenu(
-                    _transmog
-                        .ApparelDef.GetStyles()
-                        .Select(style => new FloatMenuOption(style?.Category?.LabelCap ?? style?.defName ?? "None".Translate(), () => _transmog.StyleDef = style))
-                        .ToList()
-                )
-            );
-        }
 
+        const int colorTypeWidth = 160;
+        const int colorTypeHeight = 32;
+        const int colorTypeXGap = 160;
+        const int colorTypeYGap = 16;
+
+        Rect favoriteColorRect = new Rect(inRect.x + colorTypeXGap, inRect.y, colorTypeWidth, colorTypeHeight);
         if (ModsConfig.IdeologyActive && Widgets.RadioButtonLabeled(favoriteColorRect, "Transmog.SetFavoriteColor".Translate(), _transmog.FavoriteColor))
         {
             _transmog.FavoriteColor ^= true;
         }
+
+        Rect ideoColorRect = new Rect(inRect.x + colorTypeXGap, favoriteColorRect.y + favoriteColorRect.height + colorTypeYGap, colorTypeWidth, colorTypeHeight);
         if (ModsConfig.IdeologyActive && Widgets.RadioButtonLabeled(ideoColorRect, "Transmog.SetIdeoColor".Translate(), _transmog.IdeoColor))
         {
             _transmog.IdeoColor ^= true;
         }
+
+        Rect customColorRect = new Rect(inRect.x + colorTypeXGap, ideoColorRect.y + ideoColorRect.height + colorTypeYGap, colorTypeWidth, colorTypeHeight);
         if (Widgets.RadioButtonLabeled(customColorRect, "Transmog.SetCustomColor".Translate(), !(_transmog.FavoriteColor || _transmog.IdeoColor)))
         {
             _transmog.FavoriteColor = _transmog.IdeoColor = false;
         }
+
+        Rect styleButtonRect = new Rect(inRect.x, iconRect.y + iconRect.height + gap, 320, 32);
+        if (_transmog.ApparelDef.GetStyles().Any() && Widgets.ButtonText(styleButtonRect, $"{"Style".Translate()} {_transmog.StyleDef?.Category?.LabelCap ?? _transmog.StyleDef?.defName ?? "None".Translate()}".StripTags().Truncate(styleButtonRect.width)))
+        {
+            StyleMenu.Clear();
+
+            for (int i = 0; i < _transmog.ApparelDef.GetStyles().Count; i++)
+            {
+                ThingStyleDef styleDef = _transmog.ApparelDef.GetStyles()[i];
+                StyleMenu.Add(new FloatMenuOption(styleDef?.Category?.LabelCap ?? styleDef?.defName ?? "None".Translate(), () => _transmog.StyleDef = styleDef));
+            }
+
+            Find.WindowStack.Add(new FloatMenu(StyleMenu));
+        }
+
+        Rect hexCodeLabelRect = new Rect(inRect.x, styleButtonRect.y + styleButtonRect.height + gap + 5, 12, 22);
         Widgets.Label(hexCodeLabelRect, "#");
         GUI.SetNextControlName("Hexcode");
+
+        Rect hexCodeTextRect = new Rect(hexCodeLabelRect.width + 12, styleButtonRect.y + styleButtonRect.height + gap, MaxLength * 11, 32);
         _hexCode = Widgets.TextField(hexCodeTextRect, _hexCode, MaxLength, new Regex("^[0-9a-fA-F]*$"));
         if (!_focused)
         {
@@ -85,19 +94,33 @@ public class Dialog_EditTransmog : Window
         {
             _transmog.Color = _hexCode.ToColor();
         }
+
+        Rect confirmButtonRect = new Rect(inRect.width / 2, styleButtonRect.y + styleButtonRect.height + gap, 160, 32);
         if (Widgets.ButtonText(confirmButtonRect, "Confirm".Translate()))
         {
             Find.WindowStack.TryRemove(this);
         }
 
         Color color = _transmog.Color;
+        const int colorSliderGap = 8;
+
+        Rect rRect = new Rect(inRect.x, confirmButtonRect.y + confirmButtonRect.height + colorSliderGap, 320, 32);
         color.r = Widgets.HorizontalSlider(rRect, color.r, 0, 1);
+
+        Rect gRect = new Rect(inRect.x, rRect.y + rRect.height + colorSliderGap, 320, 32);
         color.g = Widgets.HorizontalSlider(gRect, color.g, 0, 1);
+
+        Rect bRect = new Rect(inRect.x, gRect.y + gRect.height + colorSliderGap, 320, 32);
         color.b = Widgets.HorizontalSlider(bRect, color.b, 0, 1);
+        // Log.Message($"{bRect.y + bRect.height + colorSliderGap}");
+
         if (AlphaChannelEnabled)
         {
+            Rect aRect = new Rect(inRect.x, bRect.y + bRect.height + colorSliderGap, 320, 32);
             color.a = Widgets.HorizontalSlider(aRect, color.a, 0, 1);
+            // Log.Message($"{aRect.y + aRect.height + colorSliderGap}");
         }
+
         if (color != _transmog.Color)
         {
             _hexCode = color.ToString(AlphaChannelEnabled);

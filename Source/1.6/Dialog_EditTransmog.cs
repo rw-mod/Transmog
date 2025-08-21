@@ -83,7 +83,7 @@ public class Dialog_EditTransmog : Window
         Widgets.Label(hexCodeLabelRect, "#");
         GUI.SetNextControlName("Hexcode");
 
-        Rect hexCodeTextRect = new Rect(hexCodeLabelRect.width + 12, styleButtonRect.y + styleButtonRect.height + gap, MaxLength * 11, 32);
+        Rect hexCodeTextRect = new Rect(hexCodeLabelRect.width, styleButtonRect.y + styleButtonRect.height + gap, MaxLength * 11, 32);
         _hexCode = Widgets.TextField(hexCodeTextRect, _hexCode, MaxLength, new Regex("^[0-9a-fA-F]*$"));
         if (!_focused)
         {

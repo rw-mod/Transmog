@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using RimWorld;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
 namespace Transmog;
 
-public class ITab_Pawn_Transmog : ITab
+public class ITab_Transmog : ITab
 {
     private Vector2 _scrollPosition = Vector2.zero;
 
@@ -14,12 +15,13 @@ public class ITab_Pawn_Transmog : ITab
     private readonly Texture2D _paintTex = ContentFinder<Texture2D>.Get("UI/Designators/Paint_Top");
     private readonly Texture2D _revertTex = ContentFinder<Texture2D>.Get("UI/Revert");
 
-    public ITab_Pawn_Transmog()
+    public ITab_Transmog()
     {
         size = new Vector2(504, 400);
         labelKey = "Transmog.Transmog".Translate();
     }
 
+    private static readonly List<FloatMenuOption> PresetMenu = new List<FloatMenuOption>();
     protected override void FillTab()
     {
         const float margin = 16f;
@@ -62,29 +64,24 @@ public class ITab_Pawn_Transmog : ITab
 
         if (Widgets.ButtonText(new Rect(inRect.x + 2 * width / 3 + gap, curY, width / 3 - gap, height), "Transmog.Preset".Translate()))
         {
-            Find.WindowStack.Add(
-                new FloatMenu(
-                    PresetManager
-                        .presets.Select(preset =>
-                            new FloatMenuOption(
-                                preset.Key,
-                                () =>
-                                {
-                                    if (Event.current.shift)
-                                    {
-                                        PresetManager.DelPreset(preset.Key);
-                                    }
-                                    else
-                                    {
-                                        Preset.CopyFromPreset(preset.Value);
-                                    }
-                                }
-                            )
-                        )
-                        .Append(new FloatMenuOption("Transmog.Save".Translate(), () => Find.WindowStack.Add(new Dialog_SavePreset(Preset))))
-                        .ToList()
-                )
-            );
+            PresetMenu.Clear();
+
+            PresetMenu.Add(new FloatMenuOption("Transmog.Save".Translate(), () =>
+            {
+                Find.WindowStack.Add(new Dialog_PresetFileList_Save(Preset));
+            }));
+
+            PresetMenu.Add(new FloatMenuOption("Transmog.Load".Translate(), () =>
+            {
+                Find.WindowStack.Add(new Dialog_PresetFileList_Load(Preset));
+            }));
+
+            if (PresetDataSaveLoader.ExistsOldFile && !Transmog.settings.Migration)
+            {
+                PresetMenu.Add(new FloatMenuOption("Transmog.Migration".Translate(), PresetDataSaveLoader.Migration));
+            }
+            
+            Find.WindowStack.Add(new FloatMenu(PresetMenu));
         }
 
         curY += height + gap;

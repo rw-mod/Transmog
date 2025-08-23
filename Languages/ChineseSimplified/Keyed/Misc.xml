@@ -4,6 +4,7 @@
     <Transmog.DisplayAllStyles>显示所有风格</Transmog.DisplayAllStyles>
     <Transmog.DisabledOnDraft>征召时禁用</Transmog.DisabledOnDraft>
     <Transmog.AlphaChannelEnabled>启用Alpha通道</Transmog.AlphaChannelEnabled>
+    <Transmog.IgnoreGenderEnabled>忽略性别</Transmog.IgnoreGenderEnabled>
 
     <Transmog.DraftedTransmogEnabled>启用征召幻化</Transmog.DraftedTransmogEnabled>
 

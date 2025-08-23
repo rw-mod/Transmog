@@ -4,6 +4,7 @@
     <Transmog.DisplayAllStyles>Display All Styles</Transmog.DisplayAllStyles>
     <Transmog.DisabledOnDraft>Disabled On Draft</Transmog.DisabledOnDraft>
     <Transmog.AlphaChannelEnabled>Enable Alpha Channel</Transmog.AlphaChannelEnabled>
+    <Transmog.IgnoreGenderEnabled>Ignore Gender</Transmog.IgnoreGenderEnabled>
 
     <Transmog.DraftedTransmogEnabled>Enable Drafted Transmog</Transmog.DraftedTransmogEnabled>
 

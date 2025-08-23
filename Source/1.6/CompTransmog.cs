@@ -84,7 +84,7 @@ public class CompTransmog : ThingComp
 
     public void CopyFromPreset(List<TransmogApparel> preset)
     {
-        IEnumerable<TransmogApparel> newTransmog = preset.Where(apparel => apparel.ApparelDef?.apparel.PawnCanWear(Pawn) ?? false).Select(apparel => apparel.DuplicateForPawn(Pawn));
+        IEnumerable<TransmogApparel> newTransmog = preset.Where(apparel => apparel.ApparelDef?.apparel.PawnCanWear(Pawn, TransmogMod.settings.IgnoreGenderEnabled) ?? false).Select(apparel => apparel.DuplicateForPawn(Pawn));
         if (!Transmog.SequenceEqual(newTransmog))
         {
             Save();

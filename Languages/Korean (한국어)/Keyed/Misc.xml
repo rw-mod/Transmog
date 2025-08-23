@@ -4,6 +4,7 @@
     <Transmog.DisplayAllStyles>모든 양식 표시</Transmog.DisplayAllStyles>
     <Transmog.DisabledOnDraft>소집 시 비활성화</Transmog.DisabledOnDraft>
     <Transmog.AlphaChannelEnabled>알파 채널 활성화</Transmog.AlphaChannelEnabled>
+    <Transmog.IgnoreGenderEnabled>성별 제한 무시</Transmog.IgnoreGenderEnabled>
 
     <Transmog.DraftedTransmogEnabled>소집 시 외형 설정</Transmog.DraftedTransmogEnabled>
 

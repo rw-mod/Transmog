@@ -8,6 +8,7 @@ public class Settings : ModSettings
     public bool DisplayAllStyles;
     public bool DisabledOnDraft;
     public bool AlphaChannelEnabled;
+    public bool IgnoreGenderEnabled;
     public bool Migration;
 
     public void DoWindowContents(Rect inRect)
@@ -47,6 +48,16 @@ public class Settings : ModSettings
         }
         {
             Rect rowRect = ls.GetRect(height);
+            WidgetRow row = new WidgetRow(rowRect.x, rowRect.y, UIDirection.RightThenDown, ls.ColumnWidth);
+            row.Label("Transmog.IgnoreGenderEnabled".Translate());
+            WidgetRow rowRight = new WidgetRow(ls.ColumnWidth, row.FinalY, UIDirection.LeftThenDown);
+            if (rowRight.ButtonIcon(IgnoreGenderEnabled ? Widgets.CheckboxOnTex : Widgets.CheckboxOffTex))
+            {
+                IgnoreGenderEnabled = !IgnoreGenderEnabled;
+            }
+        }
+        {
+            Rect rowRect = ls.GetRect(height);
             if (Widgets.ButtonText(rowRect, "Transmog.Migration".Translate()))
             {
                 PresetDataSaveLoader.Migration();
@@ -60,6 +71,7 @@ public class Settings : ModSettings
         Scribe_Values.Look(ref DisplayAllStyles, "displayAllStyles");
         Scribe_Values.Look(ref DisabledOnDraft, "disabledOnDraft");
         Scribe_Values.Look(ref AlphaChannelEnabled, "alphaChannelEnabled");
+        Scribe_Values.Look(ref IgnoreGenderEnabled, "ignoreGenderEnabled");
         Scribe_Values.Look(ref Migration, "migration");
     }
 }

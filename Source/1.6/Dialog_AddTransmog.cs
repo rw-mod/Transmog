@@ -25,7 +25,7 @@ public class Dialog_AddTransmog : Window
         resizeable = true;
         doCloseX = true;
         _pawn = pawn;
-        _apparelForPawn = Apparel.Where(apparel => apparel.apparel.PawnCanWear(pawn));
+        _apparelForPawn = Apparel.Where(apparel => apparel.apparel.PawnCanWear(pawn, TransmogMod.settings.IgnoreGenderEnabled));
     }
 
     public override void DoWindowContents(Rect inRect)

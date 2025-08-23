@@ -19,6 +19,7 @@ public static class HarmonyPatches
         Type patchType = typeof(HarmonyPatches);
 
         HarmonyMethod transpilerReplaceWornApparel = new HarmonyMethod(patchType, nameof(Transpiler_ReplaceWornApparel));
+        HarmonyMethod transpilerRemoveCountCheck = new HarmonyMethod(patchType, nameof(Transpiler_RemoveWornApparelCountCheck));
 
         harmony.Patch(AccessTools.Method(typeof(PawnRenderUtility), "DrawEquipmentAndApparelExtras"), transpiler: transpilerReplaceWornApparel);
         harmony.Patch(AccessTools.Method(typeof(PawnRenderTree), "AdjustParms"), transpiler: transpilerReplaceWornApparel);
@@ -30,6 +31,7 @@ public static class HarmonyPatches
         if (innerType is not null && AccessTools.Method(innerType, "MoveNext") is { } moveNextMethod)
         {
             harmony.Patch(moveNextMethod, transpiler: transpilerReplaceWornApparel);
+            harmony.Patch(moveNextMethod, transpiler: transpilerRemoveCountCheck);
         }
 
         harmony.Patch(AccessTools.PropertyGetter(typeof(CompShield), "ShouldDisplay"), prefix: new HarmonyMethod(patchType, nameof(Prefix_Shield)));
@@ -68,6 +70,34 @@ public static class HarmonyPatches
         else
         {
             Log.Warning($"Transmog: Failed to find pattern in {original.DeclaringType?.Name}.{original.Name}. The mod may not work as expected.");
+        }
+
+        return codes.AsEnumerable();
+    }
+
+    private static readonly MethodInfo WornApparelCountGetter = AccessTools.PropertyGetter(typeof(Pawn_ApparelTracker), nameof(Pawn_ApparelTracker.WornApparelCount));
+    public static IEnumerable<CodeInstruction> Transpiler_RemoveWornApparelCountCheck(IEnumerable<CodeInstruction> instructions)
+    {
+        List<CodeInstruction> codes = instructions.ToList();
+
+        for (int i = 0; i < codes.Count - 1; i++)
+        {
+            if (!codes[i].Calls(WornApparelCountGetter) || !codes[i - 1].LoadsField(PawnApparelField) || codes[i + 1].opcode.FlowControl != FlowControl.Cond_Branch) continue;
+            
+            codes[i - 1].opcode = OpCodes.Nop;
+            codes[i].opcode = OpCodes.Nop;
+            
+            CodeInstruction branchInstruction = codes[i + 1];
+            if (branchInstruction.opcode == OpCodes.Brfalse_S)
+            {
+                branchInstruction.opcode = OpCodes.Br_S;
+            }
+            else if (branchInstruction.opcode == OpCodes.Brfalse)
+            {
+                branchInstruction.opcode = OpCodes.Br;
+            }
+
+            break;
         }
 
         return codes.AsEnumerable();

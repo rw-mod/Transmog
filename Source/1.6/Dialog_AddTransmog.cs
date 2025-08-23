@@ -58,7 +58,7 @@ public class Dialog_AddTransmog : Window
 
             Widgets.Label(new Rect(rowRect.x, rowRect.y + 5f, rowRect.width, height - 10f), apparel.LabelCap);
             List<ThingStyleDef> styles = apparel.GetStyles();
-            bool displayAllStyles = Transmog.settings.DisplayAllStyles ^ _invertedApparel.Contains(apparel);
+            bool displayAllStyles = TransmogMod.settings.DisplayAllStyles ^ _invertedApparel.Contains(apparel);
             for (int i = 0; i < (displayAllStyles ? styles.Count : 1); i++)
             {
                 Widgets.ThingIcon(new Rect(rowRect.xMax - Margin - height * (i + 1), curY, height, height), apparel, thingStyleDef: styles[i]);

@@ -64,11 +64,11 @@ public class Settings : ModSettings
     }
 }
 
-public class Transmog : Mod
+public class TransmogMod : Mod
 {
     public static Settings settings;
 
-    public Transmog(ModContentPack content) : base(content)
+    public TransmogMod(ModContentPack content) : base(content)
     {
         settings = GetSettings<Settings>();
     }

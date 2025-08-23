@@ -13,7 +13,7 @@ internal static class PresetDataSaveLoader
 
     public static void StartupMigration()
     {
-        if (ExistsOldFile && !Transmog.settings.Migration)
+        if (ExistsOldFile && !TransmogMod.settings.Migration)
         {
             Migration();
         }
@@ -36,8 +36,8 @@ internal static class PresetDataSaveLoader
             }
         }
 
-        Transmog.settings.Migration = true;
-        LoadedModManager.GetMod<Transmog>().WriteSettings();
+        TransmogMod.settings.Migration = true;
+        LoadedModManager.GetMod<TransmogMod>().WriteSettings();
     }
     
     private static string SavedPresetsFolderPath

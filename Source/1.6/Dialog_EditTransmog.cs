@@ -8,7 +8,7 @@ namespace Transmog;
 public class Dialog_EditTransmog : Window
 {
     private readonly TransmogApparel _transmog;
-    private static bool AlphaChannelEnabled => Transmog.settings.AlphaChannelEnabled;
+    private static bool AlphaChannelEnabled => TransmogMod.settings.AlphaChannelEnabled;
     private static int MaxLength => AlphaChannelEnabled ? 8 : 6;
     public override Vector2 InitialSize => new Vector2(360, AlphaChannelEnabled ? 376 : 336);
     private string _hexCode;

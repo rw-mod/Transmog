@@ -12,7 +12,7 @@ public static class Utility
 
     public static List<Apparel> TransmogApparel(Pawn pawn)
     {
-        return (pawn.Preset()?.Enabled ?? false) && !(Transmog.settings.DisabledOnDraft && pawn.Drafted) ? pawn.Preset().Apparel : pawn.apparel.WornApparel;
+        return (pawn.Preset()?.Enabled ?? false) && !(TransmogMod.settings.DisabledOnDraft && pawn.Drafted) ? pawn.Preset().Apparel : pawn.apparel.WornApparel;
     }
 
     private static readonly Dictionary<ThingDef, List<ThingStyleDef>> Styles = new Dictionary<ThingDef, List<ThingStyleDef>>();
